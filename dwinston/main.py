@@ -62,7 +62,7 @@ def want_rdf(accept: str):
     return False
 
 
-@app.get("/test")
+@app.get("/2021/04/marda-dd/test")
 async def root(response: Response, accept: Optional[str] = Header(None)):
     response.status_code = status.HTTP_303_SEE_OTHER
     if want_rdf(accept):
