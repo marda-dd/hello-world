@@ -1,23 +1,9 @@
 from typing import Optional
 
-from fastapi import FastAPI, Response, Header, status
+from fastapi import FastAPI, Response, Header
 from fastapi.responses import HTMLResponse
 
 app = FastAPI()
-
-html_content = """
-<html>
-  <style type="text/css">
-    dt { font-weight: bold; text-decoration: underline dotted; }
-  </style>
-  <body>
-    <dl>
-      <dt id="helloWorld">hello world</dt>
-      <dd>This is a beatiful term.</dd>
-    </dl>
-  </body>
-</html>
-"""
 
 html_content = """
 <html>
@@ -63,8 +49,7 @@ def want_rdf(accept: str):
 
 
 @app.get("/2021/04/marda-dd/test")
-async def root(response: Response, accept: Optional[str] = Header(None)):
-    response.status_code = status.HTTP_303_SEE_OTHER
+async def root(accept: Optional[str] = Header(None)):
     if want_rdf(accept):
         return Response(content=turtle_content, media_type="text/turtle")
     else:
