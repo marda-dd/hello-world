@@ -52,42 +52,41 @@ def render_html(g: rdflib.Graph) -> str:
     return header + dl + footer
 
 
-def want_rdf(accept: str) -> bool:
+def sorted_media_types(accept: str) -> bool:
     # e.g. "text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,*/*;q=0.8"
     alternatives = [a.split(";") for a in accept.split(",")]
     for a in alternatives:
+        # provide default relative quality factor
+        # https://www.w3.org/Protocols/rfc2616/rfc2616-sec14.html
         if len(a) == 1:
             a.append("q=1")
+        # ignore accept-params other than the relative quality factor
+        for i, element in enumerate(a):
+            if "=" in element and not element.startswith("q"):
+                a.pop(i)
     alternatives = sorted(
         [(type_, float(qexpr[2:])) for type_, qexpr in alternatives],
         key=lambda a: a[1],
         reverse=True,
     )
-    types_ = [a[0] for a in alternatives]
-    for t in types_:
-        if t == "text/html":
-            return False
-    return True
+    return [a[0] for a in alternatives]
 
 
 @app.get("/2021/04/marda-dd/test")
 async def root(accept: Optional[str] = Header(None)):
-    if want_rdf(accept):
-        try:
-            return Response(
-                content=TERMS.serialize(
-                    base=TEST_BASE, encoding="utf-8", format=accept
-                ).decode("utf-8"),
-                media_type=accept,
-            )
-        except rdflib.plugin.PluginException as exc:
-            raise HTTPException(
-                status_code=400,
-                detail=f"""Unsupported RDF type: {accept!r}.
-Full rdflib traceback:
-{exc}""",
-            )
-
+    types_ = sorted_media_types(accept)
+    for media_type in types_:
+        if media_type == "text/html":
+            return HTMLResponse(content=render_html(TERMS), status_code=200)
+        else:
+            try:
+                return Response(
+                    content=TERMS.serialize(
+                        base=TEST_BASE, encoding="utf-8", format=media_type
+                    ).decode("utf-8"),
+                    media_type=media_type,
+                )
+            except rdflib.plugin.PluginException:
+                continue
     else:
-        html_content = render_html(TERMS)
-        return HTMLResponse(content=html_content, status_code=200)
+        return HTMLResponse(content=render_html(TERMS), status_code=200)
