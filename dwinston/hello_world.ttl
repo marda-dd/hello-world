@@ -4,3 +4,7 @@
 <#helloWorld>
   rdfs:label "hello world" ;
   rdfs:comment "This is a beautiful term." .
+
+<#howdyWorld>
+  rdfs:label "howdy world" ;
+  rdfs:comment "This is a vulgar term." .
