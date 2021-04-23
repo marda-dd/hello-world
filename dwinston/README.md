@@ -1,4 +1,6 @@
-# Instructions
+This is deployed at <https://ns.polyneme.xyz/2021/04/marda-dd/test#helloWorld>
+
+# Development
 
 To run the server locally, (optionally) create a new Python virtualenv of your preferred flavor and install the dependencies.
 
