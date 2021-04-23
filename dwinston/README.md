@@ -54,3 +54,10 @@ uvicorn --reload --port=8000 main:app
     indicates that you prefer JSON-LD (`q=1` is implicit if unstated); if JSON-LD isn't available,
     your next preference is Turtle; and if Turtle isn't available, you prefer HTML to any other
     format.
+
+# References
+
+* [Best Practice Recipes for Publishing RDF Vocabularies -- Recipe 3. Extended configuration for a
+ 'hash namespace'](https://www.w3.org/TR/2008/NOTE-swbp-vocab-pub-20080828/#recipe3)
+  
+* [Is 303 Really Necessary?](https://blog.iandavis.com/2010/11/is-303-really-necessary/)
