@@ -42,7 +42,7 @@ uvicorn --reload --port=8000 main:app
     mime-type](https://rdflib.readthedocs.io/en/stable/plugin_serializers.html), e.g.,
     `application/rdf+xml`, `nquads`, etc., via the `Accept` header.
     
-    You may also use the [RFC 2616](https://www.w3.org/Protocols/rfc2616/rfc2616-sec14.html)
+    You may also use the [RFC 7231](https://tools.ietf.org/html/rfc7231#section-5.3.2)
     `Accept` header standard to indicate acceptable alternatives with relative quality factors. For
     example,
     
