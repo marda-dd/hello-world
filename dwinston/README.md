@@ -17,15 +17,38 @@ uvicorn --reload --port=8000 main:app
 -   To get an HTML response:
 
     ```shell
-    curl http://localhost:8000/2021/04/marda-dd/test\#helloWorld
+    curl http://localhost:8000/2021/04/marda-dd/test#helloWorld
+    # Explicitly request HTML
+    curl -H "Accept: text/html" http://localhost:8000/2021/04/marda-dd/test#helloWorld
     ```
 
-    or alternatively just visit http://localhost:8000/2021/04/marda-dd/test\#helloWorld in your browser with the server running.
+    or alternatively just visit http://localhost:8000/2021/04/marda-dd/test#helloWorld in your
+    browser with the server running.
 
--   To get responses in an RDF format:
+-   To get responses in various RDF formats:
 
     ```shell
-    curl -H "Accept: text/turtle" http://localhost:8000/2021/04/marda-dd/test\#helloWorld
+    # A readable, hand-editable RDF format ("turse [sic] triples")
+    curl -H "Accept: text/turtle" http://localhost:8000/2021/04/marda-dd/test#helloWorld
+    # JSON-LD
+    curl -H "Accept: application/ld+json" http://localhost:8000/2021/04/marda-dd/test#helloWorld
+    # XML
+    curl -H "Accept: application/rdf+xml" http://localhost:8000/2021/04/marda-dd/test#helloWorld
     ```
 
-    where `text/turtle` can be replaced with any [rdflib-compatible format or mime-type](https://rdflib.readthedocs.io/en/stable/plugin_serializers.html), e.g., `application/rdf+xml`, `nquads`.
+    You can request any [rdflib-compatible format or
+    mime-type](https://rdflib.readthedocs.io/en/stable/plugin_serializers.html), e.g.,
+    `application/rdf+xml`, `nquads`, etc., via the `Accept` header.
+    
+    You may also use the [RRC 2616](https://www.w3.org/Protocols/rfc2616/rfc2616-sec14.html)
+    `Accept` header standard to indicate acceptable alternatives with relative quality factors. For
+    example,
+    
+    ```shell
+    curl -H "Accept: text/html;q=0.5,text/turtle;q=0.8,application/ld+json" \
+        http://localhost:8000/2021/04/marda-dd/test#helloWorld
+    ```
+    
+    indicates that you prefer JSON-LD (`q=1` is implicit if unstated); if JSON-LD isn't available,
+    your next preference is Turtle; and if Turtle isn't available, you prefer HTML to any other
+    format.

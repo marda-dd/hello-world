@@ -1,14 +1,14 @@
+import os
 from typing import Optional, Union
 from pathlib import Path
 
-from fastapi import FastAPI, Response, Header, HTTPException
+from fastapi import FastAPI, Response, Header
 from fastapi.responses import HTMLResponse
 import rdflib
 
 app = FastAPI()
 
-RDF_BASE = "http://www.w3.org/2000/01/rdf-schema"
-TEST_BASE = "http://ns.polyneme.xyz/2021/04/marda-dd/test"
+TEST_BASE = "http://ns.polyneme.xyz/2021/04/marda-dd/test#"
 
 
 def load_ttl(filename: Union[Path, str]) -> rdflib.Graph:
@@ -17,7 +17,7 @@ def load_ttl(filename: Union[Path, str]) -> rdflib.Graph:
     return g
 
 
-TERMS = load_ttl("./hello_world.ttl")
+TERMS = load_ttl(os.path.join(os.path.dirname(__file__), "hello_world.ttl"))
 
 
 def render_html(g: rdflib.Graph) -> str:
@@ -39,11 +39,9 @@ def render_html(g: rdflib.Graph) -> str:
         if subject in _parsed_subjects:
             continue
         _parsed_subjects.add(subject)
-        term = subject.split(TEST_BASE + "#")[-1]
+        term = subject.split(TEST_BASE)[-1]
         label = g.label(subject)
-        comment = g.value(
-            subject=subject, predicate=rdflib.term.URIRef(f"{RDF_BASE}#comment")
-        )
+        comment = g.comment(subject)
 
         dt = f"""      <dt id="#{term}">{label}</dt>
       <dd>{comment}</dd>"""
@@ -78,6 +76,18 @@ async def root(accept: Optional[str] = Header(None)):
     for media_type in types_:
         if media_type == "text/html":
             return HTMLResponse(content=render_html(TERMS), status_code=200)
+        elif media_type == "application/ld+json":
+            TERMS.namespace_manager.bind("base", TEST_BASE)
+            try:
+                return Response(
+                    content=TERMS.serialize(
+                        encoding="utf-8", format=media_type,
+                        auto_compact=True,
+                    ).decode("utf-8"),
+                    media_type=media_type,
+                )
+            except rdflib.plugin.PluginException:
+                continue
         else:
             try:
                 return Response(
