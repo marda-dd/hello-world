@@ -1,5 +1,7 @@
 This is deployed at <https://ns.polyneme.xyz/2021/04/marda-dd/test#helloWorld>
 
+Update 2022-02-02: The code here is no longer deployed at `https://ns.polyneme.xyz`. However, the above URL still resolves via an updated codebase (that build on the code here) hosted at <https://github.com/polyneme/ns>.
+
 # Development
 
 To run the server locally, (optionally) create a new Python virtualenv of your preferred flavor and install the dependencies.
